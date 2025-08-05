@@ -1,13 +1,14 @@
-import { DatabaseConfig, IDatabaseClient } from "../IDatabaseClient";
+import {
+  DatabaseConfig,
+  DrizzleClient,
+  IDatabaseClient,
+} from "../IDatabaseClient";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-
-type DrizzleClient<TSchema extends Record<string, unknown>> = ReturnType<
-  typeof drizzle<TSchema>
->;
+import * as schema from "@/drizzle/schema";
 
 export class DrizzleDatabaseClientPool<TSchema extends Record<string, unknown>>
-  implements IDatabaseClient<DrizzleClient<TSchema>>
+  implements IDatabaseClient<TSchema>
 {
   private readonly pool: Pool;
   private client: DrizzleClient<TSchema>;
@@ -68,3 +69,17 @@ export class DrizzleDatabaseClientPool<TSchema extends Record<string, unknown>>
     }
   }
 }
+
+export const test = async () => {
+  const dbClient = new DrizzleDatabaseClientPool<typeof schema>(
+    {
+      url: process.env.DATABASE_URL!,
+    },
+    schema
+  );
+  const data = await dbClient.executeQuery("Find all users", async (db) => {
+    return await db.query.UserTable.findMany();
+  });
+  //   const data =  await db.query.UserTable.findMany();
+  console.log(data);
+};
