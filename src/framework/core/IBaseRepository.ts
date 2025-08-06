@@ -18,9 +18,10 @@ export interface IBaseRepository<TTable extends ExtendedTable> {
   findAll(options?: FindOptionsSQL): Promise<TTable["$inferSelect"][]>;
   findById(id: ID): Promise<TTable["$inferSelect"] | null>;
   findOne(where: SQLWrapper): Promise<TTable["$inferSelect"] | null>;
-  findAndCount(where?: SQLWrapper): Promise<[TTable["$inferSelect"][], number]>;
+  findAndCount(options?: FindOptionsSQL): Promise<[TTable["$inferSelect"][], number]>;
   count(where?: SQLWrapper): Promise<number>;
   checkExists(where: SQLWrapper): Promise<boolean>;
+  checkExistsById(id: ID): Promise<boolean>;
 
   // Mutations - Create
   create(data: TTable["$inferInsert"]): Promise<TTable["$inferSelect"]>;
@@ -29,7 +30,7 @@ export interface IBaseRepository<TTable extends ExtendedTable> {
   update(
     id: ID,
     data: Partial<TTable["$inferInsert"]>
-  ): Promise<TTable["$inferSelect"]>;
+  ): Promise<TTable["$inferSelect"] | null>;
   updateMany(
     data: (TTable["$inferInsert"] & { id: ID })[]
   ): Promise<TTable["$inferSelect"][]>;
