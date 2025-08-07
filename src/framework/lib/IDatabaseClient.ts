@@ -1,17 +1,18 @@
 import { drizzle } from "drizzle-orm/node-postgres";
+import * as schema from "@/drizzle/schema";
 
-export type DrizzleClient<TSchema extends Record<string, unknown>> = ReturnType<
-  typeof drizzle<TSchema>
+export type DrizzleClient = ReturnType<
+  typeof drizzle<typeof schema>
 >;
 
-export interface IDatabaseClient<TSchema extends Record<string, unknown>> {
+export interface IDatabaseClient {
   connect(): Promise<void>;
   disconnect(): Promise<void>;
-  getClient(): DrizzleClient<TSchema>;
+  getClient(): DrizzleClient;
   isConnected(): boolean;
   executeQuery<T>(
     label: string,
-    queryFn: (db: DrizzleClient<TSchema>) => Promise<T>
+    queryFn: (db: DrizzleClient) => Promise<T>
   ): Promise<T>;
 }
 

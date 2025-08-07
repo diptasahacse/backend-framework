@@ -10,13 +10,11 @@ import {
 } from "./IBaseRepository";
 import { DrizzleDatabaseClientPool } from "../lib/drizzle/DrizzleDatabaseClientPool";
 
-export abstract class BaseRepository<
-  TTable extends ExtendedTable,
-  TSchema extends Record<string, unknown>
-> implements IBaseRepository<TTable>
+export abstract class BaseRepository<TTable extends ExtendedTable>
+  implements IBaseRepository<TTable>
 {
   constructor(
-    protected readonly db: IDatabaseClient<TSchema>,
+    protected readonly db: IDatabaseClient,
     protected readonly table: TTable
   ) {}
   // Queries
@@ -165,5 +163,10 @@ export abstract class BaseRepository<
     await this.db.executeQuery("Delete", async (db) => {
       await db.delete(this.table).where(inArray(this.table.id, ids));
     });
+  }
+
+  // Table
+  gettable() {
+    return this.table;
   }
 }
