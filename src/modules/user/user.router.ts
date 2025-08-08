@@ -1,8 +1,12 @@
 import { Router } from "express";
-import { createUserController, getUserController } from "./user.controller";
+import { UserController } from "./user.controller";
+import { UserService } from "./user.service";
 
 const router = Router();
-router.get("/list", getUserController);
-router.post("/create", createUserController);
+
+const userController = new UserController(new UserService());
+
+router.get("/list", userController.findAll);
+router.post("/create", userController.create);
 
 export const userRouter = router;

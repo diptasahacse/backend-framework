@@ -10,7 +10,7 @@ export abstract class BaseService<
 > {
   constructor(protected readonly repository: TRepository) {}
 
-  findAll(options: FindOptions) {
+  async findAll(options: FindOptions) {
     this.catchError(async () => {
       const filter = options.where
         ? FilterBuilder.build(options.where)
@@ -71,14 +71,18 @@ export abstract class BaseService<
     return this.catchError(() => this.repository.findById(id));
   }
 
+  async handleError(error: unknown) {
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error(typeof error === "string" ? error : "Unknown error");
+  }
+
   protected async catchError(callBack: () => Promise<unknown>) {
     try {
       await callBack();
     } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      }
-      throw new Error(typeof error === "string" ? error : "Unknown error");
+      this.handleError(error);
     }
   }
 
